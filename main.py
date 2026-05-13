@@ -7,7 +7,8 @@ def main(page: ft.Page):
     page.title = "Asset List"
     page.padding = 16
     page.window.width = 450
-    page.window.height = 500
+    page.window.height = 300
+    page.scroll = ft.ScrollMode.ADAPTIVE
 
     # 데이터베이스 접속
     con = duckdb.connect("data/finance.db")
@@ -41,25 +42,21 @@ def main(page: ft.Page):
 
     # DataTable 생성
     data_table = ft.DataTable(
-        columns=[
-            ft.DataColumn(ft.Text("티커")),
-            ft.DataColumn(ft.Text("종목명")),
-            ft.DataColumn(ft.Text("종류")),
+        columns=[ft.DataColumn(ft.Text(col.upper())) for col in df.columns],
+        rows=[
+            ft.DataRow(cells=[ft.DataCell(ft.Text(str(val))) for val in row])
+            for row in df.values
         ],
-        rows=[]
     )
 
-    # DataRow로 변환하여 추가
-    for _, row in df.iterrows():
-        data_table.rows.append(
-            ft.DataRow(
-                cells=[
-                    ft.DataCell(ft.Text(row['ticker'])),
-                    ft.DataCell(ft.Text(row['name'])),
-                    ft.DataCell(ft.Text(row['type'])),
-                ]
-            )
-        )
+    # DataTable 생성
+    data_table = ft.DataTable(
+        columns=[ft.DataColumn(ft.Text(col.upper())) for col in df.columns],
+        rows=[
+            ft.DataRow(cells=[ft.DataCell(ft.Text(str(val))) for val in row])
+            for row in df.values
+        ],
+    )
 
     page.add(data_table)
 
